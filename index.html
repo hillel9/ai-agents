@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Agent</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="triggers-section">
+                <h3>TRIGGERS</h3>
+                <ul id="trigger-list">
+                    <li data-trigger="media-enters-category" data-modal-title="Setup trigger" data-modal-subtitle="NEW VIDEOS" data-modal-content="Trigger when new videos are added to the following category">
+                        <span class="icon">⚡️</span> When media enters a category
+                        <input type="radio" name="trigger" value="media-enters-category">
+                    </li>
+                    <li data-trigger="engagement-level" data-modal-title="Setup trigger" data-modal-subtitle="ENGAGEMENT LEVEL" data-modal-content="Trigger when media reaches a certain engagement level">
+                        <span class="icon">🔥</span> When media reaches engagement level
+                        <input type="radio" name="trigger" value="engagement-level">
+                    </li>
+                    <li data-trigger="scheduled-periodically" data-modal-title="Setup trigger" data-modal-subtitle="SCHEDULED" data-modal-content="Trigger at a scheduled interval">
+                        <span class="icon">⏰</span> Scheduled periodically
+                        <input type="radio" name="trigger" value="scheduled-periodically">
+                    </li>
+                    <li data-trigger="on-demand" data-modal-title="Setup trigger" data-modal-subtitle="ON-DEMAND" data-modal-content="Trigger manually when needed">
+                        <span class="icon">👆</span> Triggered on-demand
+                        <input type="radio" name="trigger" value="on-demand">
+                    </li>
+                </ul>
+            </div>
+            <div class="actions-section disabled">
+                <h3>ACTIONS</h3>
+                <ul id="action-list">
+                    <li data-action="captions" data-modal-title="Setup action" data-modal-subtitle="CAPTIONS" data-modal-content="Configure caption settings">
+                        <span class="icon">💬</span> Captions <span class="plus">+</span>
+                    </li>
+                    <li data-action="metadata-enrichment" data-modal-title="Setup action" data-modal-subtitle="METADATA" data-modal-content="Configure metadata enrichment settings">
+                        <span class="icon">➕</span> Metadata enrichment <span class="plus">+</span>
+                    </li>
+                    <li data-action="summary-chapters" data-modal-title="Summary & Chapters" data-modal-subtitle="SUMMARY & CHAPTERS" data-modal-content="How detailed would you like the summary?">
+                        <span class="icon">📄</span> Summary & chapters <span class="plus">+</span>
+                    </li>
+                    <li data-action="clips" data-modal-title="Setup action" data-modal-subtitle="CLIPS" data-modal-content="Configure clip generation settings">
+                        <span class="icon">✂️</span> Clips <span class="plus">+</span>
+                    </li>
+                    <li data-action="compliance-review" data-modal-title="Setup action" data-modal-subtitle="COMPLIANCE" data-modal-content="Configure compliance review settings">
+                        <span class="icon">🛡️</span> Compliance review <span class="plus">+</span>
+                    </li>
+                    <li data-action="quiz" data-modal-title="Setup action" data-modal-subtitle="QUIZ" data-modal-content="Configure quiz settings">
+                        <span class="icon">❓</span> Quiz <span class="plus">+</span>
+                    </li>
+                    <li data-action="publish" data-modal-title="Setup action" data-modal-subtitle="PUBLISH" data-modal-content="Configure publishing settings">
+                        <span class="icon">🚀</span> Publish <span class="plus">+</span>
+                    </li>
+                </ul>
+            </div>
+            <div class="general-section disabled">
+                <h3>GENERAL</h3>
+                <ul id="general-list">
+                    <li><span class="icon">🌍</span> Apply global tone of voice <span class="plus">+</span></li>
+                    <li><span class="icon">🗣️</span> Translation <span class="plus">+</span></li>
+                </ul>
+            </div>
+        </div>
+        <div class="main-panel">
+            <div class="panel-header">
+                <h2>New agent</h2>
+                <span class="edit-icon">✏️</span>
+            </div>
+            <div id="selected-items-panel">
+                <div class="placeholder">
+                    <div class="placeholder-icon">〰️</div>
+                    <p>Pick a trigger that launches your agent</p>
+                </div>
+            </div>
+            <div class="panel-footer">
+                <button id="run-test-button" disabled>Run a test</button>
+                <button id="create-agent-button" disabled>Create agent</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Trigger Modal -->
+    <div id="trigger-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2 id="trigger-modal-title-text"></h2>
+            <p id="trigger-modal-subtitle-text"></p>
+            <p id="trigger-modal-content-text"></p>
+            <div id="trigger-modal-specific-content">
+                <!-- Content specific to trigger type will be injected here -->
+            </div>
+            <div class="modal-buttons">
+                <button class="cancel-button">Cancel</button>
+                <button class="done-button">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Modal -->
+    <div id="action-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2 id="action-modal-title-text"></h2>
+            <p id="action-modal-subtitle-text"></p>
+            <p id="action-modal-content-text"></p>
+            <div id="action-modal-specific-content">
+                <!-- Content specific to action type will be injected here -->
+            </div>
+            <div class="modal-buttons">
+                <button class="cancel-button">Cancel</button>
+                <button class="done-button">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="functions.js"></script>
+</body>
+</html>
