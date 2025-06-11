@@ -1,4 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const openOverlayBtn = document.getElementById('create-with-ai-btn');
+    const aiAgentOverlay = document.getElementById('ai-agent-overlay');
+    const closeOverlayBtn = document.querySelector('.close-overlay-button');
+    const createNewAgentFromMenuBtn = document.getElementById('create-new-agent-from-menu');
+    const backToMenuBtn = document.querySelector('.back-button');
+
+    const mainMenuVew = document.getElementById('main-menu-view');
+    const agentBuilderView = document.getElementById('agent-builder-view');
+
     const triggerList = document.getElementById('trigger-list');
     const actionList = document.getElementById('action-list');
     const generalList = document.getElementById('general-list');
@@ -9,6 +18,54 @@ document.addEventListener('DOMContentLoaded', () => {
     const createAgentButton = document.getElementById('create-agent-button');
     const actionsSection = document.querySelector('.actions-section');
     const generalSection = document.querySelector('.general-section');
+
+    function showMainMenu() {
+        mainMenuVew.classList.remove('hidden');
+        agentBuilderView.classList.add('hidden');
+        aiAgentOverlay.classList.remove('builder-visible');
+        aiAgentOverlay.classList.add('menu-visible');
+    }
+
+    function showAgentBuilder() {
+        mainMenuVew.classList.add('hidden');
+        agentBuilderView.classList.remove('hidden');
+        aiAgentOverlay.classList.remove('menu-visible');
+        aiAgentOverlay.classList.add('builder-visible');
+    }
+
+    function openOverlay() {
+        aiAgentOverlay.classList.add('is-open');
+        showMainMenu();
+    }
+
+    function closeOverlay() {
+        aiAgentOverlay.classList.remove('is-open');
+    }
+
+    if (openOverlayBtn) {
+        openOverlayBtn.addEventListener('click', openOverlay);
+    }
+
+    if (closeOverlayBtn) {
+        closeOverlayBtn.addEventListener('click', closeOverlay);
+    }
+    
+    if (createNewAgentFromMenuBtn) {
+        createNewAgentFromMenuBtn.addEventListener('click', showAgentBuilder);
+    }
+    
+    if(backToMenuBtn) {
+        backToMenuBtn.addEventListener('click', showMainMenu);
+    }
+
+    // Close overlay by clicking on the backdrop
+    if (aiAgentOverlay) {
+        aiAgentOverlay.addEventListener('click', (e) => {
+            if (e.target === aiAgentOverlay) {
+                closeOverlay();
+            }
+        });
+    }
 
     let currentTriggerData = null;
     let currentActionData = null;
@@ -101,13 +158,18 @@ document.addEventListener('DOMContentLoaded', () => {
         let triggerDetails = '';
         if (currentTriggerData.type === 'media-enters-category') {
             const categorySelect = triggerModal.querySelector('#category-select');
-            triggerDetails = `Category: ${categorySelect.options[categorySelect.selectedIndex].text}`;
+            triggerDetails = `Trigger when new videos are added to ${categorySelect.options[categorySelect.selectedIndex].text}`;
+        } else {
+            triggerDetails = currentTriggerData.contentText;
         }
 
         const triggerElement = `
             <div class="selected-item trigger-item" data-type="${currentTriggerData.type}">
-                <h4>${currentTriggerData.icon} ${currentTriggerData.subtitle}</h4>
-                <p>${currentTriggerData.text}${triggerDetails ? ': ' + triggerDetails : ''}</p>
+                <div class="icon">${currentTriggerData.icon}</div>
+                <div class="selected-item-text">
+                    <h4>${currentTriggerData.text}</h4>
+                    <p>${triggerDetails}</p>
+                </div>
             </div>
         `;
         // Remove any existing trigger before adding a new one
@@ -143,16 +205,41 @@ document.addEventListener('DOMContentLoaded', () => {
         let specificContentHTML = '';
         if (currentActionData.type === 'summary-chapters') {
             specificContentHTML = `
-                <div class="radio-group">
-                    <label><input type="radio" name="summary-detail" value="brief"> Brief</label>
-                    <label><input type="radio" name="summary-detail" value="standard" checked> Standard</label>
-                    <label><input type="radio" name="summary-detail" value="detailed"> Detailed</label>
+                <div class="modal-form-section">
+                    <label for="summary-detail-slider">How detailed would you like the summary?</label>
+                    <div class="slider-container">
+                        <input type="range" id="summary-detail-slider" min="0" max="2" value="1" step="1">
+                        <div class="slider-labels">
+                            <span>Brief</span>
+                            <span>Standard</span>
+                            <span>Detailed</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else if (currentActionData.type === 'captions') {
+            specificContentHTML = `
+                <div class="modal-form-section">
+                    <label for="transcription-service-select">Transcription service</label>
+                    <select id="transcription-service-select">
+                        <option value="automatic">Automatic captioning (Machine)</option>
+                    </select>
+                </div>
+                <div class="modal-form-section">
+                    <label for="source-language-select">Source language</label>
+                    <select id="source-language-select">
+                        <option value="auto-detect">Auto-detect</option>
+                        <option value="en-US">English (US)</option>
+                        <option value="es-ES">Spanish</option>
+                        <option value="fr-FR">French</option>
+                        <option value="de-DE">German</option>
+                    </select>
                 </div>
             `;
         }
-        // Add other action types here
 
-        openModal(actionModal, currentActionData.title, currentActionData.subtitle, currentActionData.contentText, specificContentHTML);
+        const modalTitle = currentActionData.type === 'captions' ? 'Add captions' : currentActionData.title;
+        openModal(actionModal, modalTitle, currentActionData.subtitle, currentActionData.contentText, specificContentHTML);
     });
 
     // Action Modal Done Button
@@ -168,18 +255,36 @@ document.addEventListener('DOMContentLoaded', () => {
         
         let actionDetails = '';
         if (currentActionData.type === 'summary-chapters') {
-            const selectedDetail = actionModal.querySelector('input[name="summary-detail"]:checked');
-            actionDetails = `Length: ${selectedDetail.value.charAt(0).toUpperCase() + selectedDetail.value.slice(1)}`;
+            const slider = actionModal.querySelector('#summary-detail-slider');
+            const detailLevels = ['Brief', 'Standard', 'Detailed'];
+            actionDetails = `Length: ${detailLevels[slider.value]}`;
+        } else if (currentActionData.type === 'captions') {
+            const serviceSelect = actionModal.querySelector('#transcription-service-select');
+            const languageSelect = actionModal.querySelector('#source-language-select');
+            const service = serviceSelect.options[serviceSelect.selectedIndex].text;
+            const language = languageSelect.options[languageSelect.selectedIndex].text;
+            actionDetails = `Service: ${service}, Language: ${language}`;
+        } else {
+            actionDetails = "Custom instructions"; // Placeholder
         }
 
         const actionElement = `
             <div class="selected-item action-item" data-type="${currentActionData.type}">
-                <h4>${currentActionData.icon} ${currentActionData.text}</h4>
-                <p>${actionDetails}</p>
-                 <span class="action-settings-icon">⚙️</span>
+                <div class="icon">${currentActionData.icon}</div>
+                <div class="selected-item-text">
+                    <h4>${currentActionData.title}</h4>
+                    <p>${actionDetails}</p>
+                </div>
+                <span class="action-settings-icon">⚙️</span>
             </div>
         `;
         selectedItemsPanel.appendChild(document.createRange().createContextualFragment(actionElement));
+
+        // Hide the action from the list in the sidebar
+        const actionListItem = actionList.querySelector(`li[data-action="${currentActionData.type}"]`);
+        if (actionListItem) {
+            actionListItem.style.display = 'none';
+        }
 
         closeModal(actionModal);
         currentActionData = null;
